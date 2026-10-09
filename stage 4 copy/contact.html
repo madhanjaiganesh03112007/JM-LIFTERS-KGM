@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="JM LIFTERS contact page with WhatsApp support and location.">
+    <title>JM LIFTERS | Contact</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="contact">
+    <div class="topbar">
+        <div class="top-text">Operating Across Tamil Nadu</div>
+        <div class="top-text">Call: <a href="tel:9842069975">9842069975</a> • <a href="https://wa.me/919842069975" target="_blank">WhatsApp</a></div>
+    </div>
+    <header>
+        <div class="navbar">
+            <a href="index.html" class="brand">
+                <div class="brand-logo">JM</div>
+                <div class="brand-info">
+                    <div class="brand-title">JM LIFTERS</div>
+                    <div class="brand-subtitle">Crane Service</div>
+                </div>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#services">Services</a></li>
+                    <li><a href="index.html#gallery">Gallery</a></li>
+                    <li><a href="contact.html" class="active">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="section">
+        <div class="section-title">
+            <div class="line"></div>
+            <h2>Contact JM LIFTERS</h2>
+            <div class="line"></div>
+        </div>
+        <div class="grid contact-grid">
+            <div class="contact-card card">
+                <h3>Get In Touch</h3>
+                <p>Reach out directly for quotes, crane service bookings, GST invoices, and site support.</p>
+                <div class="info-box">
+                    <div>
+                        <strong>Phone</strong>
+                        <p><a href="tel:9842069975">98420 69975</a></p>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <div>
+                        <strong>WhatsApp</strong>
+                        <p><a href="https://wa.me/919842069975" target="_blank">Chat now</a></p>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <div>
+                        <strong>Location</strong>
+                        <p>Chennai, Tamil Nadu</p>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-card card">
+                <h3>Send a Message</h3>
+                <form onsubmit="submitContact(event)">
+                    <div class="form-field">
+                        <label for="contactName">Name</label>
+                        <input id="contactName" type="text" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="contactEmail">Email</label>
+                        <input id="contactEmail" type="email" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="contactMessage">Message</label>
+                        <textarea id="contactMessage" required></textarea>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Send Message</button>
+                    <p id="contactSuccess" style="display:none; margin-top: 16px; color: #bdff98;">Message sent successfully.</p>
+                </form>
+            </div>
+        </div>
+        <div class="grid grid-2" style="margin-top: 40px;">
+            <div class="card info-panel" style="display: flex; flex-direction: column; justify-content: center; background: rgba(255,191,0,0.05); border-color: rgba(255,191,0,0.2);">
+                <h3 style="color: var(--yellow); font-size: 1.5rem; margin-bottom: 24px;">Our Office Location</h3>
+                <div style="font-size: 1.1rem; line-height: 1.8; color: var(--text);">
+                    <strong style="font-size: 1.3rem; display: block; margin-bottom: 8px;">JM LIFTERS</strong>
+                    Nattarpalayam, Erode Road,<br>
+                    Kangayam, Tiruppur District,<br>
+                    Tamil Nadu<br>
+                    <br>
+                    <strong style="color: var(--yellow);">Mobile:</strong> +91 98420 69975<br>
+                    <strong style="color: var(--yellow);">Mobile:</strong> +91 94420 92848<br>
+                    <strong style="color: var(--yellow);">Email:</strong> jmlifterskgm@gmail.com
+                </div>
+            </div>
+            <div style="border-radius: 24px; overflow: hidden; box-shadow: var(--shadow); min-height: 350px; background: #111; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center;">
+                <a href="https://maps.app.goo.gl/HVRZGiMdXaHfZXxJ6?g_st=ac" target="_blank" rel="noopener noreferrer" style="color: var(--yellow); font-size: 1.1rem; font-weight: 600; text-decoration: none;">
+                    Open location in Google Maps
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <h3>JM LIFTERS</h3>
+                <p>Contact our team for crane service bookings, GST invoicing and attendance management support.</p>
+            </div>
+            <div>
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="index.html">Home</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Connect</h3>
+                <p><a href="https://wa.me/919842069975" target="_blank">WhatsApp</a></p>
+                <p><a href="tel:9842069975">98420 69975</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">&copy; 2026 JM LIFTERS. All rights reserved.</div>
+    </footer>
+    <script src="scripts.js"></script>
+</body>
+</html>

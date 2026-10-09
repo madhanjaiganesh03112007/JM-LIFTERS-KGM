@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JM Lifters Attendance & Payroll</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --bg: #090909;
+            --surface: #121212;
+            --surface-strong: #1f1f1f;
+            --text: #f1f1f1;
+            --muted: #c2c2c2;
+            --primary: #ffbf00;
+            --primary-soft: rgba(255,191,0,0.15);
+            --accent: #ffbf00;
+            --danger: #dc2626;
+            --success: #16a34a;
+            --border: rgba(255,255,255,0.08);
+            --shadow: 0 18px 60px rgba(0,0,0,0.4);
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            color: var(--text);
+            background-color: var(--bg);
+        }
+
+        .app-shell {
+            width: min(1400px, 100%);
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .dashboard-page,
+        .employee-page {
+            width: 100%;
+            max-width: 1180px;
+            background: var(--surface);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .login-page {
+            padding: 40px 32px;
+            margin: auto;
+        }
+
+        .login-card,
+        .panel-card {
+            background: var(--surface);
+            border-radius: 20px;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.2);
+            padding: 28px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+        }
+
+        .sidebar {
+            background: var(--surface);
+            border-radius: 24px;
+            padding: 28px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .sidebar h2 {
+            margin: 0 0 16px;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 14px;
+            background: var(--surface-strong);
+            color: var(--text);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-button.active,
+        .nav-button:hover {
+            border-color: rgba(255, 191, 0, 0.2);
+            background: #2a2a2a;
+        }
+
+        .nav-button span {
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: grid;
+            gap: 24px;
+        }
+
+        .panel-card {
+            padding: 24px;
+        }
+
+        .panel-card h3 {
+            margin: 0 0 18px;
+            font-size: 1.2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.94rem;
+            margin-bottom: 6px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: var(--surface-strong);
+            color: var(--text);
+            font-size: 0.98rem;
+        }
+
+        input[type="date"] {
+            max-width: 250px;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        button {
+            padding: 14px 24px;
+            border-radius: 14px;
+            border: none;
+            background: var(--primary);
+            color: #111;
+            font-size: 0.98rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button.secondary {
+            background: #475569;
+            color: #fff;
+        }
+
+        button.danger {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        button.success {
+            background: var(--success);
+        }
+
+        button.small {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 30px rgba(15, 76, 129, 0.12);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .summary-card {
+            background: var(--surface-strong);
+            border-radius: 18px;
+            padding: 22px;
+        }
+
+        .summary-card strong {
+            font-size: 1.95rem;
+            display: block;
+            margin-top: 12px;
+            color: var(--primary);
+        }
+
+        .summary-card p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            min-width: 680px;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border);
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: var(--surface-strong);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .status-present {
+            background: #ecfdf5;
+            color: #117a4f;
+        }
+
+        .status-absent {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .status-half {
+            background: #fef9c3;
+            color: #92400e;
+        }
+
+        .message-box {
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: var(--surface-strong);
+            color: var(--text);
+            margin-top: 16px;
+        }
+
+        .small-text {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .section-hidden {
+            display: none;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .header-bar h1 {
+            margin: 0;
+            font-size: 1.6rem;
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .tag-clickable {
+            cursor: pointer;
+            border: 1px solid rgba(15, 76, 129, 0.12);
+        }
+
+        .login-toggle {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .login-toggle button {
+            padding: 12px 18px;
+            font-weight: 600;
+            background: var(--surface-strong);
+            color: var(--text);
+            box-shadow: none;
+        }
+
+        .login-toggle button.active {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .form-inline {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-inline.full {
+            grid-template-columns: 1fr;
+        }
+
+        @media (max-width: 1000px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+                top: auto;
+            }
+        }
+
+        @media (max-width: 760px) {
+
+            .login-page,
+            .panel-card,
+            .sidebar,
+            .dashboard-page {
+                border-radius: 20px;
+                padding: 20px;
+            }
+
+            .form-inline {
+                grid-template-columns: 1fr;
+            }
+
+            button,
+            input,
+            select {
+                width: 100%;
+            }
+
+            table {
+                min-width: unset;
+            }
+
+            .header-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+
+<body data-page="attendance">
+    <div class="topbar">
+        <div class="top-text">Operating in Coimbatore</div>
+        <div class="top-text">Call: <a href="tel:9842069975">9842069975</a> • WhatsApp: <a href="https://wa.me/919842069975" target="_blank">9842069975</a></div>
+    </div>
+    <header>
+        <div class="navbar">
+            <a href="index.html" class="brand">
+                <div class="brand-logo">JM</div>
+                <div class="brand-info">
+                    <div class="brand-title">JM LIFTERS</div>
+                    <div class="brand-subtitle">Crane Service</div>
+                </div>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#services">Services</a></li>
+                    <li><a href="index.html#gallery">Gallery</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="app-shell" id="appShell">
+        <div id="loginPage" class="section" style="width: 100%; grid-column: 1 / -1;">
+            <div class="details-card card"
+                style="max-width:640px; margin: 0 auto; text-align:left; background: #121212; color: #fff; border: 1px solid rgba(255,255,255,0.08); padding: 32px;">
+                <h3 style="margin-top:0; font-size:1.5rem; margin-bottom: 24px;">Attendance & Payroll Login</h3>
+
+                <div class="login-toggle" style="display:flex; gap:12px; margin-bottom:24px;">
+                    <button id="adminLoginTab" class="active btn btn-primary" onclick="setLoginMode('admin')"
+                        style="flex:1;">Admin Login</button>
+                    <button id="employeeLoginTab" class="btn btn-secondary" onclick="setLoginMode('employee')"
+                        style="flex:1;">Employee Login</button>
+                </div>
+
+                <div id="adminLoginForm">
+                    <div class="form-field">
+                        <label for="adminUsername" style="color: #fff;">Gmail (optional)</label>
+                        <input id="adminUsername" type="email" placeholder="Auto: jkcraneservice69975@gmail.com">
+                    </div>
+                    <div class="form-field">
+                        <label for="adminPassword" style="color: #fff;">Password</label>
+                        <input id="adminPassword" type="password" placeholder="Admin password">
+                    </div>
+                </div>
+
+                <div id="employeeLoginForm" class="section-hidden">
+                    <div class="form-field">
+                        <label for="employeeIdLogin" style="color: #fff;">Employee ID</label>
+                        <input id="employeeIdLogin" type="text" placeholder="Enter your Employee ID">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="login()">Continue</button>
+                <p id="loginMessage" style="margin-top:16px; color: var(--yellow); display:none;"></p>
+            </div>
+        </div>
+
+        <div class="dashboard-page section-hidden" id="adminDashboard">
+            <div class="dashboard-grid">
+                <aside class="sidebar">
+                    <h2>Admin Dashboard</h2>
+                    <button class="nav-button active" id="navAddEmployee" onclick="activateTab('addEmployee')"><span>Add
+                            Employee</span></button>
+                    <button class="nav-button" id="navSalary" onclick="activateTab('salary')"><span>Employee
+                            Salary</span></button>
+                    <button class="nav-button" id="navAttendance" onclick="activateTab('attendance')"><span>Attendance
+                            Management</span></button>
+                    <button class="nav-button" id="navEmployeeDetails" onclick="activateTab('employeeDetails')"><span>Employee
+                            Details</span></button>
+                    <button class="nav-button" id="navReports"
+                        onclick="activateTab('reports')"><span>Reports</span></button>
+                    <div class="message-box" style="margin-top:auto; text-align:center;">
+                        <strong>Admin</strong><br>
+                        Full dashboard access
+                    </div>
+                </aside>
+
+                <main class="main-content">
+                    <section class="panel-card" id="sectionAddEmployee">
+                        <div
+                            style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:18px;">
+                            <h3 style="margin:0;">Add Employee</h3>
+                            <span class="tag tag-clickable" onclick="openEmployeeTagForm()">Employee Tag</span>
+                        </div>
+                        <div class="form-grid">
+                            <div>
+                                <label for="employeeName">Employee Name</label>
+                                <input id="employeeName" type="text" placeholder="Full name">
+                            </div>
+                            <div>
+                                <label for="employeeId">Employee ID</label>
+                                <input id="employeeId" type="text" placeholder="Unique ID">
+                            </div>
+                            <div>
+                                <label for="employeeMobile">Mobile Number</label>
+                                <input id="employeeMobile" type="tel" placeholder="Mobile number">
+                            </div>
+                            <div>
+                                <label for="employeeRole">Job Role</label>
+                                <input id="employeeRole" type="text" placeholder="Crane Operator, Driver, etc.">
+                            </div>
+                            <div>
+                                <label for="employeeJoinDate">Joining Date</label>
+                                <input id="employeeJoinDate" type="date">
+                            </div>
+                            <div>
+                                <label for="employeeDailySalary">Daily Salary (₹)</label>
+                                <input id="employeeDailySalary" type="number" min="0" step="0.01"
+                                    placeholder="Daily salary">
+                            </div>
+                        </div>
+                        <div class="button-row">
+                            <button onclick="saveEmployee()">Save Employee</button>
+                            <button class="secondary" onclick="clearEmployeeForm()">Clear</button>
+                        </div>
+                        <div class="message-box section-hidden" id="employeeTagPrompt" style="margin-top:20px;">
+                            <h4 style="margin:0 0 12px;">Quick Add via Tag</h4>
+                            <div class="form-grid">
+                                <div>
+                                    <label for="employeeTagName">Employee Name</label>
+                                    <input id="employeeTagName" type="text" placeholder="Full name">
+                                </div>
+                                <div>
+                                    <label for="employeeTagDob">Date of Birth</label>
+                                    <input id="employeeTagDob" type="date">
+                                </div>
+                                <div>
+                                    <label for="employeeTagSalary">Daily Salary (₹)</label>
+                                    <input id="employeeTagSalary" type="number" min="0" step="0.01"
+                                        placeholder="Daily salary">
+                                </div>
+                            </div>
+                            <div class="button-row" style="margin-top:12px;">
+                                <button onclick="saveEmployeeTag()">Save Tag Employee</button>
+                                <button class="secondary" onclick="closeEmployeeTagForm()">Cancel</button>
+                            </div>
+                            <div class="message-box" id="employeeTagMessage" style="display:none;"></div>
+                        </div>
+                        <div class="message-box" id="employeeFormMessage" style="display:none;"></div>
+                        <div style="margin-top: 24px;">
+                            <h4>Registered Employees</h4>
+                            <div class="table-wrap" id="employeeTableContainer"></div>
+                        </div>
+                    </section>
+
+                    <section class="panel-card section-hidden" id="sectionSalary">
+                        <div class="header-bar">
+                            <h3>Employee Salary</h3>
+                            <div class="form-inline full">
+                                <div>
+                                    <label for="salaryEmployeeSelect">Select Employee</label>
+                                    <select id="salaryEmployeeSelect" onchange="renderSalaryPanel()"></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="summary-grid" id="salarySummaryGrid"></div>
+                        <div class="panel-card" style="padding:20px;">
+                            <h4>Record Payment</h4>
+                            <div class="form-grid">
+                                <div>
+                                    <label for="paymentAmount">Paid Amount (₹)</label>
+                                    <input id="paymentAmount" type="number" min="0" step="0.01"
+                                        placeholder="Enter paid amount">
+                                </div>
+                                <div>
+                                    <label for="paymentNote">Payment Note</label>
+                                    <input id="paymentNote" type="text" placeholder="Bonus, advance etc.">
+                                </div>
+                            </div>
+                            <div class="button-row">
+                                <button onclick="recordSalaryPayment()">Save Payment</button>
+                            </div>
+                            <div class="message-box" id="salaryMessage" style="display:none;"></div>
+                        </div>
+                    </section>
+
+                    <section class="panel-card section-hidden" id="sectionAttendance">
+                        <div class="header-bar">
+                            <div>
+                                <h3>Attendance Management</h3>
+                                <p class="small-text">Search employees, filter by date or month, and mark attendance
+                                    instantly.</p>
+                            </div>
+                        </div>
+                        <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                            <div>
+                                <label for="attendanceDate">Date</label>
+                                <input id="attendanceDate" type="date" onchange="renderAttendanceTable()">
+                            </div>
+                            <div>
+                                <label for="attendanceSearch">Search</label>
+                                <input id="attendanceSearch" type="search" placeholder="Search name or ID"
+                                    oninput="renderAttendanceTable()">
+                            </div>
+                        </div>
+                        <div class="table-wrap" style="margin-top:20px;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>ID</th>
+                                        <th>Role</th>
+                                        <th>Mobile</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendanceTableBody"></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="panel-card section-hidden" id="sectionEmployeeDetails">
+                        <div class="header-bar">
+                            <div>
+                                <h3>Employee Details</h3>
+                                <p class="small-text">View employee profile, summary, salary, and attendance
+                                    performance.</p>
+                            </div>
+                        </div>
+                        <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                            <div>
+                                <label for="detailsEmployeeSelect">Select Employee</label>
+                                <select id="detailsEmployeeSelect" onchange="renderEmployeeDetails()"></select>
+                            </div>
+                            <div style="align-self:end;">
+                                <button onclick="renderEmployeeDetails()">Show Details</button>
+                            </div>
+                        </div>
+                        <div id="employeeDetailsPanel" class="message-box" style="margin-top:20px; display:none;"></div>
+                    </section>
+
+                    <section class="panel-card section-hidden" id="sectionReports">
+                        <h3>Reports & Insights</h3>
+                        <div class="summary-grid">
+                            <div class="summary-card">
+                                <p>Total employees</p>
+                                <strong id="reportTotalEmployees">0</strong>
+                            </div>
+                            <div class="summary-card">
+                                <p>Attendance Records</p>
+                                <strong id="reportAttendanceRecords">0</strong>
+                            </div>
+                            <div class="summary-card">
+                                <p>Total Salary Paid</p>
+                                <strong id="reportSalaryPaid">₹0.00</strong>
+                            </div>
+                            <div class="summary-card">
+                                <p>Salary Balance</p>
+                                <strong id="reportSalaryBalance">₹0.00</strong>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+
+        <div class="employee-page section-hidden" id="employeePortal">
+            <div class="panel-card">
+                <div class="header-bar">
+                    <div>
+                        <p class="tag">Employee Portal</p>
+                        <h1 id="employeePortalTitle">Welcome</h1>
+                        <p class="small-text">Quick view of attendance history, salary summary, and balance.</p>
+                    </div>
+                    <button class="secondary" onclick="logout()">Logout</button>
+                </div>
+                <div class="summary-grid" style="margin-top:20px;" id="employeeSummaryGrid"></div>
+                <div class="panel-card" style="margin-top:20px; padding:20px;">
+                    <h3>Attendance History</h3>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Note</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employeeAttendanceHistory"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="panel-card" style="margin-top:20px; padding:20px;">
+                    <h3>Salary Details</h3>
+                    <div id="employeeSalaryDetails"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const storageKey = 'jmLiftersAttendanceApp';
+        const allowedAdminEmail = 'jkcraneservice69975@gmail.com';
+        let appState = {
+            employees: [],
+            attendance: []
+        };
+        let currentMode = 'admin';
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadState();
+            setLoginMode('admin');
+            initializeLoginDate();
+            refreshSelectLists();
+            activateTab('addEmployee');
+            document.getElementById('adminPassword').addEventListener('keydown', event => {
+                if (event.key === 'Enter') login();
+            });
+        });
+
+        function apiUrl(path) {
+            if (path.startsWith('http://') || path.startsWith('https://')) return path;
+            if (window.location.protocol === 'file:') return 'http://127.0.0.1:3000' + path;
+            return path;
+        }
+
+        async function apiRequest(path, options = {}) {
+            const response = await fetch(apiUrl(path), {
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+                ...options
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(data.error || 'Request failed.');
+            return data;
+        }
+
+        async function loadState() {
+            try {
+                const db = await apiRequest('/api/state');
+                appState = db.attendanceApp || appState;
+                localStorage.setItem(storageKey, JSON.stringify(appState));
+            } catch (error) {
+                const saved = localStorage.getItem(storageKey);
+                if (saved) appState = JSON.parse(saved);
+            }
+        }
+
+        async function saveState() {
+            localStorage.setItem(storageKey, JSON.stringify(appState));
+            try {
+                const db = await apiRequest('/api/state', {
+                    method: 'PUT',
+                    body: JSON.stringify({ attendanceApp: appState })
+                });
+                appState = db.attendanceApp || appState;
+            } catch (error) {
+                showLoginMessage('Saved locally. Login with the allowed Gmail to sync with backend.', true);
+            }
+        }
+
+        function setLoginMode(mode) {
+            currentMode = mode;
+            document.getElementById('adminLoginTab').classList.toggle('active', mode === 'admin');
+            document.getElementById('employeeLoginTab').classList.toggle('active', mode === 'employee');
+            document.getElementById('adminLoginForm').classList.toggle('section-hidden', mode !== 'admin');
+            document.getElementById('employeeLoginForm').classList.toggle('section-hidden', mode !== 'employee');
+            document.getElementById('loginMessage').style.display = 'none';
+        }
+
+        function initializeLoginDate() {
+            const dateInput = document.getElementById('attendanceDate');
+            const today = new Date();
+            const isoDate = today.toISOString().slice(0, 10);
+            dateInput.value = isoDate;
+        }
+
+        async function login() {
+            const messageBox = document.getElementById('loginMessage');
+            messageBox.style.display = 'none';
+            if (currentMode === 'admin') {
+                const enteredEmail = document.getElementById('adminUsername').value.trim().toLowerCase();
+                const email = enteredEmail || allowedAdminEmail;
+                const pass = document.getElementById('adminPassword').value.trim();
+                if (email !== allowedAdminEmail) {
+                    showLoginMessage('Only jkcraneservice69975@gmail.com can sign in.', true);
+                    return;
+                }
+                if (!pass) {
+                    showLoginMessage('Enter the admin password.', true);
+                    return;
+                }
+                try {
+                    await apiRequest('/api/auth/login', {
+                        method: 'POST',
+                        body: JSON.stringify({ email, password: pass })
+                    });
+                    await loadState();
+                    currentUser = { role: 'admin', email };
+                    showAdminDashboard();
+                } catch (error) {
+                    const text = error.message === 'Failed to fetch'
+                        ? 'Cannot reach the backend. Open http://127.0.0.1:3000/attendance.html and make sure server.js is running.'
+                        : error.message;
+                    showLoginMessage(text, true);
+                }
+                return;
+            }
+
+            const employeeId = document.getElementById('employeeIdLogin').value.trim();
+            const employee = appState.employees.find(emp => emp.id.toLowerCase() === employeeId.toLowerCase());
+            if (!employee) {
+                showLoginMessage('Employee ID not found. Please check and try again.', true);
+                return;
+            }
+            currentUser = { role: 'employee', id: employee.id };
+            showEmployeePortal();
+        }
+
+        function showLoginMessage(message, isError = false) {
+            const messageBox = document.getElementById('loginMessage');
+            messageBox.textContent = message;
+            messageBox.style.display = 'block';
+            messageBox.style.color = isError ? varColor('--danger') : varColor('--text');
+            messageBox.style.background = isError ? '#fee2e2' : '#f8fafc';
+        }
+
+        function varColor(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        function showAdminDashboard() {
+            document.getElementById('loginPage').classList.add('section-hidden');
+            document.getElementById('employeePortal').classList.add('section-hidden');
+            document.getElementById('adminDashboard').classList.remove('section-hidden');
+            initializeLoginDate();
+            refreshEmployeeTable();
+            refreshSelectLists();
+            renderSalaryPanel();
+            renderAttendanceTable();
+            renderReportCards();
+        }
+
+        function showEmployeePortal() {
+            document.getElementById('loginPage').classList.add('section-hidden');
+            document.getElementById('adminDashboard').classList.add('section-hidden');
+            document.getElementById('employeePortal').classList.remove('section-hidden');
+            renderEmployeePortal();
+        }
+
+        async function logout() {
+            await apiRequest('/api/auth/logout', { method: 'POST' }).catch(() => {});
+            currentUser = null;
+            document.getElementById('loginPage').classList.remove('section-hidden');
+            document.getElementById('employeePortal').classList.add('section-hidden');
+            document.getElementById('adminDashboard').classList.add('section-hidden');
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('employeeIdLogin').value = '';
+            setLoginMode('admin');
+        }
+
+        function activateTab(section) {
+            const sections = ['addEmployee', 'salary', 'attendance', 'employeeDetails', 'reports'];
+            sections.forEach(name => {
+                document.getElementById('section' + capitalize(name)).classList.toggle('section-hidden', name !== section);
+                document.getElementById('nav' + capitalize(name)).classList.toggle('active', name === section);
+            });
+            if (section === 'salary') renderSalaryPanel();
+            if (section === 'attendance') renderAttendanceTable();
+            if (section === 'employeeDetails') renderEmployeeDetails();
+            if (section === 'reports') renderReportCards();
+        }
+
+        function capitalize(text) {
+            return text.charAt(0).toUpperCase() + text.slice(1);
+        }
+
+        function saveEmployee() {
+            const name = document.getElementById('employeeName').value.trim();
+            const id = document.getElementById('employeeId').value.trim();
+            const mobile = document.getElementById('employeeMobile').value.trim();
+            const role = document.getElementById('employeeRole').value.trim();
+            const joiningDate = document.getElementById('employeeJoinDate').value;
+            const dailySalary = Number(document.getElementById('employeeDailySalary').value);
+            const messageBox = document.getElementById('employeeFormMessage');
+
+            if (!name || !id || !mobile || !role || !joiningDate || !dailySalary) {
+                showEmployeeFormMessage('Complete all fields to add a new employee.', true);
+                return;
+            }
+
+            if (appState.employees.some(emp => emp.id.toLowerCase() === id.toLowerCase())) {
+                showEmployeeFormMessage('Employee ID already exists. Use a different ID.', true);
+                return;
+            }
+
+            const newEmployee = {
+                id,
+                name,
+                mobile,
+                role,
+                joiningDate,
+                dailySalary,
+                payments: [],
+                attendanceRecords: []
+            };
+
+            appState.employees.unshift(newEmployee);
+            saveState();
+            refreshEmployeeTable();
+            refreshSelectLists();
+            renderAttendanceTable();
+            renderReportCards();
+            showEmployeeFormMessage('Employee added successfully.', false);
+            clearEmployeeForm();
+        }
+
+        function openEmployeeTagForm() {
+            document.getElementById('employeeTagPrompt').classList.remove('section-hidden');
+        }
+
+        function closeEmployeeTagForm() {
+            document.getElementById('employeeTagPrompt').classList.add('section-hidden');
+        }
+
+        function saveEmployeeTag() {
+            const name = document.getElementById('employeeTagName').value.trim();
+            const dob = document.getElementById('employeeTagDob').value;
+            const dailySalary = Number(document.getElementById('employeeTagSalary').value);
+            const messageBox = document.getElementById('employeeTagMessage');
+
+            if (!name || !dob || !dailySalary) {
+                showEmployeeTagMessage('Enter name, date of birth and daily salary.', true);
+                return;
+            }
+
+            const id = `EMP${Date.now()}`;
+            const newEmployee = {
+                id,
+                name,
+                mobile: '',
+                role: 'Staff',
+                joiningDate: new Date().toISOString().slice(0, 10),
+                dob,
+                dailySalary,
+                payments: [],
+                attendanceRecords: []
+            };
+
+            appState.employees.unshift(newEmployee);
+            saveState();
+            refreshEmployeeTable();
+            refreshSelectLists();
+            renderAttendanceTable();
+            renderReportCards();
+            showEmployeeTagMessage('Employee tag saved and data shared across the dashboard.', false);
+            document.getElementById('employeeTagName').value = '';
+            document.getElementById('employeeTagDob').value = '';
+            document.getElementById('employeeTagSalary').value = '';
+            closeEmployeeTagForm();
+        }
+
+        function showEmployeeTagMessage(message, isError = false) {
+            const messageBox = document.getElementById('employeeTagMessage');
+            messageBox.textContent = message;
+            messageBox.style.display = 'block';
+            messageBox.style.color = isError ? varColor('--danger') : varColor('--text');
+            messageBox.style.background = isError ? '#fef2e2' : '#f8fafc';
+        }
+
+        function clearEmployeeForm() {
+            document.getElementById('employeeName').value = '';
+            document.getElementById('employeeId').value = '';
+            document.getElementById('employeeMobile').value = '';
+            document.getElementById('employeeRole').value = '';
+            document.getElementById('employeeJoinDate').value = '';
+            document.getElementById('employeeDailySalary').value = '';
+        }
+
+        function showEmployeeFormMessage(message, isError = false) {
+            const messageBox = document.getElementById('employeeFormMessage');
+            messageBox.textContent = message;
+            messageBox.style.display = 'block';
+            messageBox.style.color = isError ? varColor('--danger') : varColor('--text');
+            messageBox.style.background = isError ? '#fef2f2' : '#f8fafc';
+        }
+
+        function refreshEmployeeTable() {
+            const container = document.getElementById('employeeTableContainer');
+            if (!appState.employees.length) {
+                container.innerHTML = '<div class="message-box">No employees found. Add employees to start managing attendance and salary.</div>';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>Name</th><th>ID</th><th>Role</th><th>DOB</th><th>Mobile</th><th>Joined</th><th>Daily Salary</th><th>Action</th></tr></thead><tbody>';
+            appState.employees.forEach((employee, index) => {
+                html += `<tr>` +
+                    `<td>${employee.name}</td>` +
+                    `<td>${employee.id}</td>` +
+                    `<td>${employee.role}</td>` +
+                    `<td>${employee.dob || '—'}</td>` +
+                    `<td>${employee.mobile}</td>` +
+                    `<td>${employee.joiningDate}</td>` +
+                    `<td>₹${employee.dailySalary.toFixed(2)}</td>` +
+                    `<td><button class="secondary small" onclick="deleteEmployee(${index})">Delete</button></td>` +
+                    `</tr>`;
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function deleteEmployee(index) {
+            const employee = appState.employees[index];
+            if (!employee) return;
+            const confirmDelete = confirm(`Delete ${employee.name} (${employee.id}) and all their attendance/salary records?`);
+            if (!confirmDelete) return;
+            appState.employees.splice(index, 1);
+            saveState();
+            refreshEmployeeTable();
+            refreshSelectLists();
+            renderAttendanceTable();
+            renderReportCards();
+        }
+
+        function refreshSelectLists() {
+            const salarySelect = document.getElementById('salaryEmployeeSelect');
+            const detailsSelect = document.getElementById('detailsEmployeeSelect');
+            const options = ['<option value="">Select employee</option>'];
+            appState.employees.forEach(emp => {
+                options.push(`<option value="${emp.id}">${emp.name} (${emp.id})</option>`);
+            });
+            salarySelect.innerHTML = options.join('');
+            detailsSelect.innerHTML = options.join('');
+        }
+
+        function renderSalaryPanel() {
+            const selectedId = document.getElementById('salaryEmployeeSelect').value;
+            const grid = document.getElementById('salarySummaryGrid');
+            const messageBox = document.getElementById('salaryMessage');
+            messageBox.style.display = 'none';
+            if (!selectedId) {
+                grid.innerHTML = '<div class="summary-card"><p>Select an employee to review salary details.</p></div>';
+                return;
+            }
+            const employee = appState.employees.find(emp => emp.id === selectedId);
+            if (!employee) return;
+            const attendanceCounts = computeAttendanceCounts(employee);
+            const totalSalary = attendanceCounts.workedDays * employee.dailySalary;
+            const paidAmount = employee.payments.reduce((sum, p) => sum + Number(p.amount), 0);
+            const balance = totalSalary - paidAmount;
+            grid.innerHTML = `
+                <div class="summary-card"><p>Total worked days</p><strong>${attendanceCounts.workedDays}</strong></div>
+                <div class="summary-card"><p>Daily salary</p><strong>₹${employee.dailySalary.toFixed(2)}</strong></div>
+                <div class="summary-card"><p>Total salary</p><strong>₹${totalSalary.toFixed(2)}</strong></div>
+                <div class="summary-card"><p>Paid amount</p><strong>₹${paidAmount.toFixed(2)}</strong></div>
+                <div class="summary-card"><p>Balance salary</p><strong>₹${balance.toFixed(2)}</strong></div>
+                <div class="summary-card"><p>Attendance record</p><strong>${attendanceCounts.present}P / ${attendanceCounts.half}H / ${attendanceCounts.absent}A</strong></div>
+            `;
+        }
+
+        function recordSalaryPayment() {
+            const selectedId = document.getElementById('salaryEmployeeSelect').value;
+            const amountField = document.getElementById('paymentAmount');
+            const noteField = document.getElementById('paymentNote');
+            const messageBox = document.getElementById('salaryMessage');
+            const amount = Number(amountField.value);
+            const note = noteField.value.trim();
+            if (!selectedId) {
+                showSalaryMessage('Select an employee before saving payment.', true);
+                return;
+            }
+            if (!amount || amount <= 0) {
+                showSalaryMessage('Enter a valid payment amount.', true);
+                return;
+            }
+            const employee = appState.employees.find(emp => emp.id === selectedId);
+            if (!employee) return;
+            const dateTime = new Date().toLocaleString();
+            employee.payments.push({ amount, note: note || 'Salary payment', dateTime });
+            saveState();
+            amountField.value = '';
+            noteField.value = '';
+            renderSalaryPanel();
+            renderReportCards();
+            showSalaryMessage('Payment recorded successfully.');
+        }
+
+        function showSalaryMessage(message, isError = false) {
+            const messageBox = document.getElementById('salaryMessage');
+            messageBox.textContent = message;
+            messageBox.style.display = 'block';
+            messageBox.style.color = isError ? varColor('--danger') : varColor('--text');
+            messageBox.style.background = isError ? '#fef2e2' : '#f8fafc';
+        }
+
+        function renderAttendanceTable() {
+            const tbody = document.getElementById('attendanceTableBody');
+            const selectedDate = document.getElementById('attendanceDate').value;
+            const search = document.getElementById('attendanceSearch').value.trim().toLowerCase();
+            const rows = appState.employees
+                .filter(emp => {
+                    if (!search) return true;
+                    return emp.name.toLowerCase().includes(search) || emp.id.toLowerCase().includes(search);
+                });
+
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td colspan="6">No employees match the filter.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = rows.map((employee, index) => {
+                const status = getAttendanceStatus(employee, selectedDate);
+                return `<tr>
+                    <td>${employee.name}</td>
+                    <td>${employee.id}</td>
+                    <td>${employee.role}</td>
+                    <td>${employee.mobile}</td>
+                    <td>${renderStatusLabel(status)}</td>
+                    <td>
+                        <button class="small success" onclick="markAttendance('${employee.id}', 'Present')">Present</button>
+                        <button class="small secondary" onclick="markAttendance('${employee.id}', 'Half Day')">Half Day</button>
+                        <button class="small danger" onclick="markAttendance('${employee.id}', 'Absent')">Absent</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function getAttendanceStatus(employee, date) {
+            if (!date) return '';
+            const record = employee.attendanceRecords.find(item => item.date === date);
+            return record ? record.status : 'Not marked';
+        }
+
+        function renderStatusLabel(status) {
+            if (status === 'Present') return '<span class="status-pill status-present">Present</span>';
+            if (status === 'Half Day') return '<span class="status-pill status-half">Half Day</span>';
+            if (status === 'Absent') return '<span class="status-pill status-absent">Absent</span>';
+            return '<span class="status-pill">Not marked</span>';
+        }
+
+        function markAttendance(employeeId, status) {
+            const date = document.getElementById('attendanceDate').value;
+            if (!date) {
+                alert('Select a date before marking attendance.');
+                return;
+            }
+            const employee = appState.employees.find(emp => emp.id === employeeId);
+            if (!employee) return;
+            const record = employee.attendanceRecords.find(item => item.date === date);
+            if (record) {
+                record.status = status;
+            } else {
+                employee.attendanceRecords.push({ date, status });
+            }
+            saveState();
+            renderAttendanceTable();
+            renderSalaryPanel();
+            renderEmployeeDetails();
+            renderReportCards();
+        }
+
+        function renderEmployeeDetails() {
+            const selectedId = document.getElementById('detailsEmployeeSelect').value;
+            const panel = document.getElementById('employeeDetailsPanel');
+            if (!selectedId) {
+                panel.style.display = 'none';
+                return;
+            }
+            const employee = appState.employees.find(emp => emp.id === selectedId);
+            if (!employee) {
+                panel.style.display = 'none';
+                return;
+            }
+            const counts = computeAttendanceCounts(employee);
+            const totalSalary = counts.workedDays * employee.dailySalary;
+            const paid = employee.payments.reduce((sum, p) => sum + Number(p.amount), 0);
+            const balance = totalSalary - paid;
+            const latestPayment = employee.payments.slice(-3).reverse();
+            panel.style.display = 'block';
+            panel.innerHTML = `
+                <div style="display:grid; gap:14px;">
+                    <div><strong>${employee.name}</strong> • ${employee.role}</div>
+                    <div class="small-text">ID: ${employee.id} • DOB: ${employee.dob || '—'} • Mobile: ${employee.mobile} • Joined: ${employee.joiningDate}</div>
+                    <div class="summary-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+                        <div class="summary-card"><p>Daily salary</p><strong>₹${employee.dailySalary.toFixed(2)}</strong></div>
+                        <div class="summary-card"><p>Worked days</p><strong>${counts.workedDays}</strong></div>
+                        <div class="summary-card"><p>Total salary</p><strong>₹${totalSalary.toFixed(2)}</strong></div>
+                        <div class="summary-card"><p>Balance</p><strong>₹${balance.toFixed(2)}</strong></div>
+                    </div>
+                    <div>
+                        <h4 style="margin:0 0 10px;">Recent payments</h4>
+                        ${latestPayment.length ? '<table><thead><tr><th>Date</th><th>Note</th><th>Amount</th></tr></thead><tbody>' + latestPayment.map(payment => `<tr><td>${payment.dateTime}</td><td>${payment.note}</td><td>₹${Number(payment.amount).toFixed(2)}</td></tr>`).join('') + '</tbody></table>' : '<p class="small-text">No payments recorded yet.</p>'}
+                    </div>
+                </div>
+            `;
+        }
+
+        function computeAttendanceCounts(employee) {
+            const counts = { present: 0, half: 0, absent: 0, workedDays: 0 };
+            employee.attendanceRecords.forEach(record => {
+                if (record.status === 'Present') {
+                    counts.present += 1;
+                    counts.workedDays += 1;
+                } else if (record.status === 'Half Day') {
+                    counts.half += 1;
+                    counts.workedDays += 0.5;
+                } else if (record.status === 'Absent') {
+                    counts.absent += 1;
+                }
+            });
+            return counts;
+        }
+
+        function renderReportCards() {
+            const totalEmployees = appState.employees.length;
+            const totalAttendance = appState.employees.reduce((sum, emp) => sum + emp.attendanceRecords.length, 0);
+            const totalPaid = appState.employees.reduce((sum, emp) => sum + emp.payments.reduce((sub, p) => sub + Number(p.amount), 0), 0);
+            const totalBalance = appState.employees.reduce((sum, emp) => {
+                const counts = computeAttendanceCounts(emp);
+                const totalSalary = counts.workedDays * emp.dailySalary;
+                const paid = emp.payments.reduce((sub, p) => sub + Number(p.amount), 0);
+                return sum + (totalSalary - paid);
+            }, 0);
+            document.getElementById('reportTotalEmployees').textContent = totalEmployees;
+            document.getElementById('reportAttendanceRecords').textContent = totalAttendance;
+            document.getElementById('reportSalaryPaid').textContent = `₹${totalPaid.toFixed(2)}`;
+            document.getElementById('reportSalaryBalance').textContent = `₹${totalBalance.toFixed(2)}`;
+        }
+
+        function renderEmployeePortal() {
+            const employee = appState.employees.find(emp => emp.id === currentUser.id);
+            if (!employee) return;
+            document.getElementById('employeePortalTitle').textContent = `${employee.name} (${employee.id})`;
+            const counts = computeAttendanceCounts(employee);
+            const totalSalary = counts.workedDays * employee.dailySalary;
+            const paid = employee.payments.reduce((sum, p) => sum + Number(p.amount), 0);
+            const balance = totalSalary - paid;
+            document.getElementById('employeeSummaryGrid').innerHTML = `
+                <div class="summary-card"><p>Worked days</p><strong>${counts.workedDays}</strong></div>
+                <div class="summary-card"><p>Daily salary</p><strong>₹${employee.dailySalary.toFixed(2)}</strong></div>
+                <div class="summary-card"><p>Total salary</p><strong>₹${totalSalary.toFixed(2)}</strong></div>
+                <div class="summary-card"><p>Paid amount</p><strong>₹${paid.toFixed(2)}</strong></div>
+                <div class="summary-card"><p>Balance amount</p><strong>₹${balance.toFixed(2)}</strong></div>
+            `;
+            const attendanceRows = [...employee.attendanceRecords]
+                .sort((a, b) => b.date.localeCompare(a.date))
+                .map(record => `<tr><td>${record.date}</td><td>${renderStatusLabel(record.status)}</td><td>${record.note || ''}</td></tr>`)
+                .join('');
+            document.getElementById('employeeAttendanceHistory').innerHTML = attendanceRows || '<tr><td colspan="3">No attendance recorded yet.</td></tr>';
+            document.getElementById('employeeSalaryDetails').innerHTML = `
+                <div class="summary-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px;">
+                    <div class="summary-card"><p>Daily salary</p><strong>₹${employee.dailySalary.toFixed(2)}</strong></div>
+                    <div class="summary-card"><p>Working days</p><strong>${counts.workedDays}</strong></div>
+                    <div class="summary-card"><p>Total salary</p><strong>₹${totalSalary.toFixed(2)}</strong></div>
+                    <div class="summary-card"><p>Balance amount</p><strong>₹${balance.toFixed(2)}</strong></div>
+                </div>
+                <div style="margin-top:20px;">
+                    <h4 style="margin:0 0 10px;">Payments</h4>
+                    ${employee.payments.length ? '<table><thead><tr><th>Date</th><th>Note</th><th>Amount</th></tr></thead><tbody>' + employee.payments.slice().reverse().map(payment => `<tr><td>${payment.dateTime}</td><td>${payment.note}</td><td>₹${Number(payment.amount).toFixed(2)}</td></tr>`).join('') + '</tbody></table>' : '<p class="small-text">No payments recorded yet.</p>'}
+                </div>
+            `;
+        }
+    </script>
+    <footer class="footer">
+        <div class="footer-grid">
+            <div>
+                <h3>JM LIFTERS</h3>
+                <p>Complete bill detail tracking with search by customer and date for easy reconciliation.</p>
+            </div>
+            <div>
+                <h3>Quick Links</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>Contact</h3>
+                <p>Call: <a href="tel:9842069975">98420 69975</a></p>
+                <p><a href="https://wa.me/919842069975" target="_blank">WhatsApp</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">&copy; 2026 JM LIFTERS. All rights reserved.</div>
+    </footer>
+</body>
+
+</html>

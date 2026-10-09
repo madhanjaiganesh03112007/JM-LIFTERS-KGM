@@ -1,0 +1,19 @@
+{
+  "dashboard": {
+    "bills": [],
+    "attendance": [],
+    "employees": []
+  },
+  "attendanceApp": {
+    "employees": [],
+    "attendance": []
+  },
+  "contacts": [
+    {
+      "name": "madhan",
+      "email": "MADHAN4246@GMAIL.COM",
+      "message": "ajbjbc",
+      "createdAt": "2026-08-03T16:17:06.335Z"
+    }
+  ]
+}
